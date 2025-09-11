@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"os"
-	"github.com/silinternational/nodeping-cli/lib"
+	"github.com/sil-org/nodeping-cli/lib"
 	"time"
 )
 
@@ -75,4 +75,3 @@ func runUptime() {
 		fmt.Printf("%s, %v\n", label, results.Uptimes[label])
 	}
 }
-

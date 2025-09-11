@@ -2,7 +2,7 @@ package lib
 
 import (
 	"testing"
-	"github.com/silinternational/nodeping-go-client"
+	"github.com/sil-org/nodeping-go-client"
 )
 
 
