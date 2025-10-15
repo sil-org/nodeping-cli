@@ -35,24 +35,21 @@ func GetContactGroupIDFromName(contactGroupName string, npClient *nodeping.NodeP
 	return cgID, nil
 }
 
-func GetCheckIDsAndLabels(
-	contactGroupID string,
-	npClient *nodeping.NodePingClient,
-) ([]string, map[string]string, error) {
+func GetCheckIDsAndLabels(id string, client *nodeping.NodePingClient) ([]string, map[string]string, error) {
 	checkIDs := map[string]string{}
 	checkLabels := []string{}
 
-	checks, err := npClient.ListChecks()
+	checks, err := client.ListChecks()
 	if err != nil {
 		return checkLabels, checkIDs, err
 	}
 
 	for _, check := range checks {
 		// Notifications is a list of maps with the contactGroup ID as keys
-		for _, notfctn := range check.Notifications {
+		for _, notification := range check.Notifications {
 			foundOne := false
-			for nKey := range notfctn {
-				if nKey == contactGroupID {
+			for nKey := range notification {
+				if nKey == id {
 					checkIDs[check.Label] = check.ID
 					checkLabels = append(checkLabels, check.Label)
 					foundOne = true
@@ -88,7 +85,7 @@ func GetUptimesForChecks(
 	return uptimes
 }
 
-func GetUptimesForContactGroup(token, name string, period PeriodValue) (UptimeResults, error) {
+func GetUptimesForContactGroup(token, name string, period Period) (UptimeResults, error) {
 	npClient, err := nodeping.New(nodeping.ClientConfig{Token: token})
 	emptyResults := UptimeResults{}
 
@@ -107,14 +104,8 @@ func GetUptimesForContactGroup(token, name string, period PeriodValue) (UptimeRe
 		return emptyResults, err
 	}
 
-	start := int64(0)
-	end := int64(0)
-
-	if period != "" {
-		periodObject := GetPeriodByName(period, 0)
-		start = periodObject.From * 1000
-		end = periodObject.To * 1000
-	}
+	start := period.From.Unix() * 1000
+	end := period.To.Unix() * 1000
 
 	uptimes := GetUptimesForChecks(checkIDs, start, end, npClient)
 	uptimesByLabel := map[string]float32{}

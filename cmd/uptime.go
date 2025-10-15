@@ -11,7 +11,7 @@ import (
 
 var (
 	contactGroupName string
-	period           lib.PeriodValue
+	period           lib.Period = lib.GetTodayPeriod(time.Now().UTC())
 )
 
 var uptimeCmd = &cobra.Command{
@@ -42,17 +42,6 @@ func init() {
 		fmt.Sprintf(`Name of the time period to get uptime values for ... %v`, periods),
 	)
 	uptimeCmd.MarkFlagRequired("contact-group")
-	uptimeCmd.RegisterFlagCompletionFunc("period", periodAutoCompletion)
-}
-
-func periodAutoCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	periods := lib.GetValidPeriods()
-	valid := make([]string, len(periods))
-	for i, v := range periods {
-		valid[i] = string(v)
-	}
-
-	return valid, cobra.ShellCompDirectiveDefault
 }
 
 func runUptime() {
@@ -64,7 +53,6 @@ func runUptime() {
 	fmt.Printf(
 		"\nPeriod: %s. From: %v      To: %v\n\n",
 		period,
-		// time.Unix(start/1000, 0).Format(time.RFC822Z),
 		time.Unix(results.StartTime, 0).UTC(),
 		time.Unix(results.EndTime, 0).UTC(),
 	)
