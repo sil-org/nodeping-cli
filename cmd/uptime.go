@@ -19,9 +19,7 @@ var uptimeCmd = &cobra.Command{
 	Short: "Get the uptime for checks",
 	Long:  "Get the uptime for all the checks for a certain Contact Group.",
 	Args:  cobra.ExactArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		runUptime()
-	},
+	Run:   runUptime,
 }
 
 func init() {
@@ -44,7 +42,7 @@ func init() {
 	uptimeCmd.MarkFlagRequired("contact-group")
 }
 
-func runUptime() {
+func runUptime(_ *cobra.Command, _ []string) {
 	results, err := lib.GetUptimesForContactGroup(nodepingToken, contactGroupName, period)
 	if err != nil {
 		log.Fatal(err)
