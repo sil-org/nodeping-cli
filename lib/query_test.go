@@ -2,12 +2,11 @@ package lib
 
 import (
 	"testing"
-	"github.com/silinternational/nodeping-go-client"
+
+	"github.com/sil-org/nodeping-go-client"
 )
 
-
 func TestGetContactGroupIDFromName(t *testing.T) {
-
 	npClient, _ := nodeping.New(nodeping.ClientConfig{Token: "TestToken"})
 
 	npClient.MockResults = `
@@ -20,7 +19,6 @@ func TestGetContactGroupIDFromName(t *testing.T) {
 `
 
 	resultsID, err := GetContactGroupIDFromName("CGList2", npClient)
-
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -31,7 +29,6 @@ func TestGetContactGroupIDFromName(t *testing.T) {
 	if resultsID != expectedID {
 		t.Errorf("Wrong contact group ID. Expected %s, but got %s", expectedID, resultsID)
 	}
-
 }
 
 func TestGetCheckIDsAndLabels(t *testing.T) {
@@ -109,7 +106,6 @@ func TestGetCheckIDsAndLabels(t *testing.T) {
 }
 
 func TestGetUptimesForChecks(t *testing.T) {
-
 	npClient, _ := nodeping.New(nodeping.ClientConfig{Token: "TestToken"})
 
 	npClient.MockResults = `
@@ -133,5 +129,4 @@ func TestGetUptimesForChecks(t *testing.T) {
 	if len(uptimes) != 2 || uptimes["c1ID"] != expected["c1ID"] || uptimes["c2ID"] != expected["c2ID"] {
 		t.Errorf("Got wrong uptime results. \nExpected %+v\n  but got %+v", expected, uptimes)
 	}
-
 }

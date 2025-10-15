@@ -2,33 +2,26 @@ package lib
 
 import (
 	"fmt"
-	"github.com/silinternational/nodeping-go-client"
-	"os"
 	"sort"
+
+	"github.com/sil-org/nodeping-go-client"
 )
 
 type UptimeResults struct {
 	CheckLabels []string
-	Uptimes map[string]float32
-	StartTime int64
-	EndTime int64
+	Uptimes     map[string]float32
+	StartTime   int64
+	EndTime     int64
 }
 
 func GetContactGroupIDFromName(contactGroupName string, npClient *nodeping.NodePingClient) (string, error) {
-
 	contactGroups, err := npClient.ListContactGroups()
-
 	if err != nil {
-		return "", err
-	}
-
-	if err != nil {
-		fmt.Printf("Error retrieving contact groups: \n%s\n", err.Error())
-		os.Exit(1)
+		return "", fmt.Errorf("error retrieving contact groups: %w", err)
 	}
 
 	cgID := ""
-	for cgKey, cg := range contactGroups{
+	for cgKey, cg := range contactGroups {
 		if cg.Name == contactGroupName {
 			cgID = cgKey
 			break
@@ -36,7 +29,7 @@ func GetContactGroupIDFromName(contactGroupName string, npClient *nodeping.NodeP
 	}
 
 	if cgID == "" {
-		return "", fmt.Errorf("Could not find contact group with name \"%s\"\n", contactGroupName)
+		return "", fmt.Errorf(`contact group not found with name: "%s"`, contactGroupName)
 	}
 
 	return cgID, nil
@@ -46,18 +39,13 @@ func GetCheckIDsAndLabels(
 	contactGroupID string,
 	npClient *nodeping.NodePingClient,
 ) ([]string, map[string]string, error) {
-
 	checkIDs := map[string]string{}
 	checkLabels := []string{}
 
 	checks, err := npClient.ListChecks()
-
 	if err != nil {
 		return checkLabels, checkIDs, err
 	}
-
-	//fmt.Printf("First Check:\n%+v\n", checks[0])
-
 
 	for _, check := range checks {
 		// Notifications is a list of maps with the contactGroup ID as keys
@@ -86,7 +74,6 @@ func GetUptimesForChecks(
 	start, end int64,
 	npClient *nodeping.NodePingClient,
 ) map[string]float32 {
-
 	uptimes := map[string]float32{}
 
 	for _, checkID := range checkIDs {
@@ -96,17 +83,13 @@ func GetUptimesForChecks(
 			continue
 		}
 		uptimes[checkID] = nextUptime["total"].Uptime
-		//fmt.Printf("Got Uptime Response ...\n   %+v\n", nextUptime)
 	}
 
 	return uptimes
 }
 
-
-func GetUptimesForContactGroup(
-	nodepingToken, contactGroupName, period string,
-) (UptimeResults, error) {
-	npClient, err := nodeping.New(nodeping.ClientConfig{Token: nodepingToken})
+func GetUptimesForContactGroup(token, name string, period PeriodValue) (UptimeResults, error) {
+	npClient, err := nodeping.New(nodeping.ClientConfig{Token: token})
 	emptyResults := UptimeResults{}
 
 	if err != nil {
@@ -114,14 +97,12 @@ func GetUptimesForContactGroup(
 		return emptyResults, err
 	}
 
-	cgID, err := GetContactGroupIDFromName(contactGroupName, npClient)
-
+	cgID, err := GetContactGroupIDFromName(name, npClient)
 	if err != nil {
 		return emptyResults, err
 	}
 
 	checkLabels, checkIDs, err := GetCheckIDsAndLabels(cgID, npClient)
-
 	if err != nil {
 		return emptyResults, err
 	}
@@ -144,9 +125,9 @@ func GetUptimesForContactGroup(
 
 	results := UptimeResults{
 		CheckLabels: checkLabels,
-		Uptimes: uptimesByLabel,
-		StartTime: start/1000,
-		EndTime: end/1000,
+		Uptimes:     uptimesByLabel,
+		StartTime:   start / 1000,
+		EndTime:     end / 1000,
 	}
 
 	return results, nil
