@@ -85,7 +85,7 @@ func GetUptimesForChecks(
 	return uptimes
 }
 
-func GetUptimesForContactGroup(token, name string, period Period) (UptimeResults, error) {
+func GetUptimesForContactGroup(token, group string, period Period) (UptimeResults, error) {
 	npClient, err := nodeping.New(nodeping.ClientConfig{Token: token})
 	emptyResults := UptimeResults{}
 
@@ -94,7 +94,7 @@ func GetUptimesForContactGroup(token, name string, period Period) (UptimeResults
 		return emptyResults, err
 	}
 
-	cgID, err := GetContactGroupIDFromName(name, npClient)
+	cgID, err := GetContactGroupIDFromName(group, npClient)
 	if err != nil {
 		return emptyResults, err
 	}

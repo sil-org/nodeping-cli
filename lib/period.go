@@ -22,6 +22,16 @@ var validPeriods = map[string]func(time.Time) Period{
 	"LastYear":  GetLastYearPeriod,
 }
 
+// GetPeriod returns a valid period for the given string
+func GetPeriod(v string) (*Period, error) {
+	var period Period
+	if err := period.Set(v); err != nil {
+		return nil, err
+	}
+
+	return &period, nil
+}
+
 // GetValidPeriods returns a list of valid periods
 func GetValidPeriods() []string {
 	keys := make([]string, 0, len(validPeriods))
