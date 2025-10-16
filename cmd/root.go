@@ -25,8 +25,7 @@ func Execute() {
 
 func init() {
 	// Get Nodeping Token from env vars
-	nodepingToken = os.Getenv(NodepingTokenKey)
-	if nodepingToken == "" {
-		log.Fatalf("Error: Environment variable for %s is required to execute plan and migration", NodepingTokenKey)
+	if nodepingToken = os.Getenv(NodepingTokenKey); nodepingToken == "" {
+		log.Fatalf("Error: missing required environment variable: %s", NodepingTokenKey)
 	}
 }
