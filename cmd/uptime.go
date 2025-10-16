@@ -48,13 +48,7 @@ func runUptime(_ *cobra.Command, _ []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf(
-		"\nPeriod: %s. From: %v      To: %v\n\n",
-		period,
-		time.Unix(results.StartTime, 0).UTC(),
-		time.Unix(results.EndTime, 0).UTC(),
-	)
-
+	fmt.Printf("\n%s\n\n", period)
 	for _, label := range results.CheckLabels {
 		fmt.Printf("%s, %v\n", label, results.Uptimes[label])
 	}
