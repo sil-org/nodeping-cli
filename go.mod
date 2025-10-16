@@ -1,6 +1,6 @@
 module github.com/sil-org/nodeping-cli
 
-go 1.25
+go 1.21
 
 require (
 	github.com/sil-org/nodeping-go-client v0.0.0-20250912043348-b0585b500abd
