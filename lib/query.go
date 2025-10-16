@@ -86,12 +86,10 @@ func GetUptimesForChecks(
 }
 
 func GetUptimesForContactGroup(token, group string, period Period) (UptimeResults, error) {
+	var emptyResults UptimeResults
 	npClient, err := nodeping.New(nodeping.ClientConfig{Token: token})
-	emptyResults := UptimeResults{}
-
 	if err != nil {
-		err = fmt.Errorf("Error initializing cli: %s", err.Error())
-		return emptyResults, err
+		return emptyResults, fmt.Errorf("error initializing cli: %w", err)
 	}
 
 	cgID, err := GetContactGroupIDFromName(group, npClient)
