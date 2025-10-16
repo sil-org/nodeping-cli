@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 )
@@ -21,22 +22,25 @@ var validPeriods = map[string]func(time.Time) Period{
 	"LastYear":  GetLastYearPeriod,
 }
 
+// GetValidPeriods returns a list of valid periods
 func GetValidPeriods() []string {
 	keys := make([]string, 0, len(validPeriods))
 	for k := range validPeriods {
 		keys = append(keys, k)
 	}
 
+	sort.Strings(keys)
 	return keys
 }
 
+// String formats the period into a human readable string
 func (p *Period) String() string {
-	if p.name != "" {
-		return p.name
-	}
-	return p.From.String() + " to " + p.To.String()
+	return fmt.Sprintf("Period: %s. From: %s      To: %s", p.name, p.From, p.To)
 }
 
+// Set is used by Cobra to set the variable. This checks against the valid periods
+// and outputs an error message if invalid, otherwise it sets the period to the
+// corresponding valid reference.
 func (e *Period) Set(v string) error {
 	f, ok := validPeriods[v]
 	if !ok {
@@ -44,6 +48,7 @@ func (e *Period) Set(v string) error {
 		for k := range validPeriods {
 			keys = append(keys, k)
 		}
+		sort.Strings(keys)
 		return fmt.Errorf(`must be one of "%s"`, strings.Join(keys, `", "`))
 	}
 
@@ -51,6 +56,7 @@ func (e *Period) Set(v string) error {
 	return nil
 }
 
+// Type is used by cobra as a helper method
 func (e *Period) Type() string {
 	return "period"
 }
