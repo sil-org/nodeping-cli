@@ -1,37 +1,25 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"fmt"
-	"os"
-	"github.com/silinternational/nodeping-cli/lib"
+	"log"
 	"time"
+
+	"github.com/sil-org/nodeping-cli/lib"
+	"github.com/spf13/cobra"
 )
 
-var contactGroupName string
-var period string
+var (
+	contactGroupName string
+	period           lib.Period = lib.GetTodayPeriod(time.Now().UTC())
+)
 
 var uptimeCmd = &cobra.Command{
-	Use: "uptime",
+	Use:   "uptime",
 	Short: "Get the uptime for checks",
-	Long: "Get the uptime for all the checks for a certain Contact Group.",
+	Long:  "Get the uptime for all the checks for a certain Contact Group.",
 	Args:  cobra.ExactArgs(0),
-	Run: func(cmd *cobra.Command, args []string) {
-		if contactGroupName == "" {
-			fmt.Println("Error: The 'contact-group' flag is required (e.g. -g AppsDev).")
-			os.Exit(1)
-		}
-
-		if period != "" {
-			if ! lib.IsPeriodValid(period) {
-				fmt.Printf(
-					"Error: The period value is not valid. It must be one of these ...\n%v\n",
-					lib.GetValidPeriods())
-				os.Exit(1)
-			}
-		}
-		runUptime()
-	},
+	Run:   runUptime,
 }
 
 func init() {
@@ -45,34 +33,23 @@ func init() {
 		"",
 		`Name of the Contact Group to retrieve uptime data for.`,
 	)
-	uptimeCmd.Flags().StringVarP(
+	uptimeCmd.Flags().VarP(
 		&period,
 		"period",
 		"p",
-		"",
 		fmt.Sprintf(`Name of the time period to get uptime values for ... %v`, periods),
 	)
+	uptimeCmd.MarkFlagRequired("contact-group")
 }
 
-func runUptime() {
+func runUptime(_ *cobra.Command, _ []string) {
 	results, err := lib.GetUptimesForContactGroup(nodepingToken, contactGroupName, period)
-
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	fmt.Printf(
-		"\nPeriod: %s. From: %v      To: %v\n\n",
-		period,
-		//time.Unix(start/1000, 0).Format(time.RFC822Z),
-		time.Unix(results.StartTime, 0).UTC(),
-		time.Unix(results.EndTime, 0).UTC(),
-	)
-
-
+	fmt.Printf("\n%s\n\n", period)
 	for _, label := range results.CheckLabels {
 		fmt.Printf("%s, %v\n", label, results.Uptimes[label])
 	}
 }
-
