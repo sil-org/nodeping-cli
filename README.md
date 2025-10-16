@@ -27,12 +27,12 @@ package example
 import "github.com/sil-org/nodeping-cli"
 
 func getUptime(token, group, periodName string) error {
-	period, err := lib.GetPeriod(periodName)
+	period, err := nodeping.GetPeriod(periodName)
 	if err != nil {
 		return err
 	}
 
-	uptimeResults, err := lib.GetUptimesForContactGroup(token, group, period)
+	uptimeResults, err := nodeping.GetUptimesForContactGroup(token, group, period)
 	return err
 }
 ```
