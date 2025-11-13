@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: ${{ fromJSON(vars.DEFAULT_JOB_TIMEOUT_MINUTES) }}
     strategy:
       matrix:
-        go-version: [1.21, 1.22, 1.23, 1.24, 1.25]
+        go-version: [1.24, 1.25]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
